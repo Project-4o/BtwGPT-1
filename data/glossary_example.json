@@ -1,0 +1,34 @@
+{
+  "_description": "Glossary format for BtwGPT-1. Place your glossary.json in data/train/<lang>/glossary.json",
+  "_format": "Each entry has: word/phrase, definition, and optionally the 'real' formal equivalent",
+  "entries": [
+    {
+      "term": "mdr",
+      "definition": "Mort de rire - equivalent of LOL in French",
+      "formal": "c'est drôle",
+      "lang": "fr",
+      "type": "slang"
+    },
+    {
+      "term": "tkt",
+      "definition": "T'inquiète - don't worry",
+      "formal": "ne t'inquiète pas",
+      "lang": "fr",
+      "type": "slang"
+    },
+    {
+      "term": "jsp",
+      "definition": "Je sais pas - I don't know",
+      "formal": "je ne sais pas",
+      "lang": "fr",
+      "type": "slang"
+    },
+    {
+      "term": "sah",
+      "definition": "Seriously / for real",
+      "formal": "sérieusement",
+      "lang": "fr",
+      "type": "slang"
+    }
+  ]
+}

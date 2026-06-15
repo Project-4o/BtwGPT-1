@@ -12,11 +12,14 @@ class BtwGPTDataset(Dataset):
     """
     Dataset for BtwGPT-1 training.
 
-    Supports two data formats:
+    Supports:
     1. Plain text files (.txt) - one document per line or paragraph-separated
     2. JSON/JSONL files (.json/.jsonl) - conversational format:
        {"conversations": [{"role": "user", "content": "..."}, {"role": "assistant", "content": "..."}]}
+    3. Glossary files (glossary.json) - slang/word definitions:
+       {"entries": [{"term": "...", "definition": "...", "formal": "..."}]}
 
+    Data path supports lang subfolders: data/train/fr/, data/train/en/, etc.
     All data is tokenized and packed into fixed-length sequences.
     """
 
@@ -49,25 +52,56 @@ class BtwGPTDataset(Dataset):
         )
 
     def _load_data(self, data_path: str):
-        """Load and tokenize data from the given path."""
-        if os.path.isdir(data_path):
-            files = [
-                os.path.join(data_path, f)
-                for f in os.listdir(data_path)
-                if f.endswith((".txt", ".json", ".jsonl"))
-            ]
-        else:
-            files = [data_path]
+        """Load and tokenize data from the given path (supports lang subfolders)."""
+        files = self._collect_files(data_path)
 
         all_tokens: List[int] = []
 
         for filepath in sorted(files):
-            if filepath.endswith(".txt"):
+            basename = os.path.basename(filepath).lower()
+            if basename == "glossary.json":
+                all_tokens.extend(self._process_glossary(filepath))
+            elif filepath.endswith(".txt"):
                 all_tokens.extend(self._process_text_file(filepath))
             elif filepath.endswith((".json", ".jsonl")):
                 all_tokens.extend(self._process_json_file(filepath))
 
         self._pack_tokens(all_tokens)
+
+    def _collect_files(self, data_path: str) -> List[str]:
+        """Recursively collect all data files from path and lang subfolders."""
+        if not os.path.isdir(data_path):
+            return [data_path] if os.path.exists(data_path) else []
+
+        files = []
+        for root, dirs, filenames in os.walk(data_path):
+            for f in filenames:
+                if f.endswith((".txt", ".json", ".jsonl")):
+                    files.append(os.path.join(root, f))
+        return files
+
+    def _process_glossary(self, filepath: str) -> List[int]:
+        """Process a glossary.json file into training tokens."""
+        tokens = []
+        with open(filepath, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        entries = data.get("entries", [])
+        for entry in entries:
+            term = entry.get("term", "")
+            definition = entry.get("definition", "")
+            formal = entry.get("formal", "")
+            entry_type = entry.get("type", "word")
+
+            if entry_type == "slang" and formal:
+                text = f'"{term}" is slang for "{formal}". It means: {definition}'
+            else:
+                text = f'"{term}": {definition}'
+
+            ids = encode(self.sp, text, add_bos=True, add_eos=True)
+            tokens.extend(ids)
+
+        return tokens
 
     def _process_text_file(self, filepath: str) -> List[int]:
         """Process a plain text file."""

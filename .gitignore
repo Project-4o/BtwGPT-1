@@ -30,13 +30,9 @@ tokenizer/*.vocab
 logs/
 wandb/
 
-# Data (user provides their own)
-data/train/*.txt
-data/train/*.json
-data/train/*.jsonl
-data/eval/*.txt
-data/eval/*.json
-data/eval/*.jsonl
+# Data (user provides their own - not tracked in git)
+data/train/
+data/eval/
 
 # IDE
 .vscode/
