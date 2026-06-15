@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# PyTorch checkpoints & model outputs
+checkpoints/
+output/
+*.pt
+*.pth
+*.bin
+*.safetensors
+*.gguf
+
+# Tokenizer output (trained models)
+tokenizer/*.model
+tokenizer/*.vocab
+
+# Training logs & plots
+logs/
+wandb/
+
+# Data (user provides their own)
+data/train/*.txt
+data/train/*.json
+data/train/*.jsonl
+data/eval/*.txt
+data/eval/*.json
+data/eval/*.jsonl
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Jupyter
+.ipynb_checkpoints/
